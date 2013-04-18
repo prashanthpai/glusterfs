@@ -241,7 +241,7 @@ afr_writev_wind (call_frame_t *frame, xlator_t *this)
                                            local->cont.writev.offset,
                                            local->cont.writev.flags,
                                            local->cont.writev.iobref,
-                                           NULL);
+                                           local->xdata_req);
 
                         if (!--call_count)
                                 break;
@@ -465,6 +465,11 @@ afr_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
         ret = afr_local_init (local, priv, &op_errno);
         if (ret < 0)
                 goto out;
+
+        if (xdata)
+                local->xdata_req = dict_ref (xdata);
+        else
+                local->xdata_req = NULL;
 
         local->cont.writev.vector     = iov_dup (vector, count);
         local->cont.writev.count      = count;
